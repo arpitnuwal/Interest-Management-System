@@ -1,0 +1,203 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Admin.master.cs" Inherits="worker_Admin" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <!-- Bootstrap Styles-->
+    <link href="assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <link href="assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- Morris Chart Styles-->
+    <link href="assets/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="assets/css/custom-styles.css" rel="stylesheet" />
+    <!-- Google Fonts-->
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+
+    <style>
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: red;
+            color: white;
+            text-align: center;
+        }
+
+        .btn-btn-success {
+            display: inline-block;
+            width: 55px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: #e0600b;
+            color: white;
+            border: 1px solid #E4E7ED;
+            -webkit-transition: 0.2s all;
+            transition: 0.2s all;
+        }
+
+        .btn-btn-success11 {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: #E4E7ED;
+            color: red;
+            border: 1px solid #E4E7ED;
+            -webkit-transition: 0.2s all;
+            transition: 0.2s all;
+        }
+
+        .btn-btn-success:hover {
+            -webkit-transition: 0.2s all;
+            transition: 0.2s all;
+            background-color: #E4E7ED;
+            color: #D10024;
+        }
+
+        .btn-btn-success .active {
+            background-color: #D10024;
+            border-color: #D10024;
+            color: #FFF;
+            font-weight: 500;
+            cursor: default;
+        }
+
+        .btn-btn-success a {
+            display: block;
+        }
+    </style>  <style type="text/css">
+        .messagealert {
+            width: 100%;
+            top: 0px;
+            z-index: 100000;
+            padding: 0;
+            font-size: 15px;
+        }
+         .ajax__calendar_container {
+            z-index: 1000;
+        }
+
+                  .cssactive {
+                  
+                  background-color:red !important;
+                  
+                  }
+
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body style="height: auto">
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
+        <div style="background-color: black;">
+            <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: black; color: white; border: none !important; padding: 0px">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#" style="color: white"></a>
+                    </div>
+                    <div class="collapse navbar-collapse" id="myNavbar">
+                        <ul class="nav navbar-nav">
+
+                           
+                         
+
+
+                        
+
+
+                            <li ><a href="user.aspx"  style='<%= SetCssClass("user.aspx") %>' >Create New Loan</a></li>
+                          <li ><a href="Modification.aspx"   style='<%= SetCssClass("Modification.aspx") %>'>List</a></li>
+                          <li ><a href="searchbyname.aspx"   style='<%= SetCssClass("searchbyname.aspx") %>'>Name Filter</a></li>
+                           <li><a href="detailshow.aspx"  style='<%= SetCssClass("detailshow.aspx") %>'>Detail</a></li>
+                            <li>
+                               
+
+                                
+                            </li>
+                          
+                                <li ><a href="onlynamesearch.aspx"   style='<%= SetCssClass("onlynamesearch.aspx") %>'>List 1</a></li>
+
+                            <li><a href="ChangePassoword.aspx"  style='<%= SetCssClass("ChangePassoword.aspx") %>'>Change Password</a></li>
+
+                             <li><a href="newimport.aspx"  style='<%= SetCssClass("newimport.aspx") %>'>Import Data</a></li>
+                                <li><a href="newexport.aspx"  style='<%= SetCssClass("newexport.aspx") %>'>Export Data</a></li>
+                            
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            
+
+                            <li>
+                                <asp:LinkButton ID="LinkButton2" runat="server" Style="color: white" OnClick="LinkButton1_Click"><span class="glyphicon glyphicon-log-in"></span> Logout</asp:LinkButton></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+
+        <br />
+        <br />
+     
+            <br />
+        <br />
+
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+
+       
+        <div class="container-fluid  footer">
+            <div class="row" style="background-color: #073d46; padding: 3px; color: white; text-align: center">
+                <h5> </h5>
+            </div>
+        </div>
+        <!-- /. PAGE INNER  -->
+
+        <!-- /. PAGE WRAPPER  -->
+
+        <!-- /. WRAPPER  -->
+        <!-- JS Scripts-->
+        <!-- jQuery Js -->
+        <script src="assets/js/jquery-1.10.2.js"></script>
+        <!-- Bootstrap Js -->
+        <script src="assets/js/bootstrap.min.js"></script>
+
+        <!-- Metis Menu Js -->
+        <script src="assets/js/jquery.metisMenu.js"></script>
+        <!-- Morris Chart Js -->
+        <script src="assets/js/morris/raphael-2.1.0.min.js"></script>
+        <script src="assets/js/morris/morris.js"></script>
+
+
+        <script src="assets/js/easypiechart.js"></script>
+        <script src="assets/js/easypiechart-data.js"></script>
+
+        <script src="assets/js/Lightweight-Chart/jquery.chart.js"></script>
+
+        <!-- Custom Js -->
+        <script src="assets/js/custom-scripts.js"></script>
+
+        <script >
+    
+        </script>
+
+
+
+    </form>
+</body>
+</html>
