@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Globalization;
 
 public partial class AddTransaction : System.Web.UI.Page
 {
@@ -11,51 +12,83 @@ public partial class AddTransaction : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
-            LoadParty();
+          
         }
     }
 
-    void LoadParty()
-    {
-        con.Open();
-        SqlDataAdapter da = new SqlDataAdapter("SELECT PartyID, Name FROM Party", con);
-        DataTable dt = new DataTable();
-        da.Fill(dt);
-
-        ddlParty.DataSource = dt;
-        ddlParty.DataTextField = "Name";
-        ddlParty.DataValueField = "PartyID";
-        ddlParty.DataBind();
-        ddlParty.Items.Insert(0, new System.Web.UI.WebControls.ListItem("-- Select Party --", "0"));
-        con.Close();
-    }
+   
 
     protected void btnSave_Click(object sender, EventArgs e)
     {
         try
         {
-            if (ddlParty.SelectedValue == "0")
+            if (txtname.Text == "")
             {
-                lblMsg.Text = "❌ Please select a party!";
+
+                lblMsg.Text = "Enter name";
                 return;
+            
             }
 
-            int partyId = Convert.ToInt32(ddlParty.SelectedValue);
+            int partyId = Convert.ToInt32(lblpid.Text);
             int type = Convert.ToInt32(ddlType.SelectedValue);
             decimal amount = Convert.ToDecimal(txtAmount.Text);
             decimal monthlyRate = Convert.ToDecimal(txtInterest.Text);
-            DateTime transactionDate = Convert.ToDateTime(txtDate.Text);
+            DateTime fromDate, toDate;
+
+            bool isFromValid = DateTime.TryParseExact(
+                txtDate.Text.Trim(),
+                "dd-MM-yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out fromDate);
+
+            bool isToValid = DateTime.TryParseExact(
+                txtCloseDate.Text.Trim(),
+                "dd-MM-yyyy",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out toDate);
+
+            if (!isFromValid || !isToValid)
+            {
+                lblMsg.Text = "Please enter valid date in dd-MM-yyyy format";
+                return;
+            }
+
+            if (toDate < fromDate)
+            {
+                lblMsg.Text = "To date must be greater than from date";
+                return;
+            }
+
+            // total months
+            int months = ((toDate.Year - fromDate.Year) * 12)
+                       + (toDate.Month - fromDate.Month);
+
+            // month date add करके difference निकालो
+            DateTime tempDate = fromDate.AddMonths(months);
+
+            // अगर date आगे निकल गई तो 1 month कम
+            if (tempDate > toDate)
+            {
+                months--;
+                tempDate = fromDate.AddMonths(months);
+            }
+
+            // remaining days
+            int days = (toDate - tempDate).Days;
 
             con.Open();
 
             decimal interest = 0;
 
-            DateTime endDate = new DateTime(transactionDate.Year, 12, 31);
 
-            int daysRemainingInMonth = 30 - transactionDate.Day + 1;
+
+            int daysRemainingInMonth = days;
             decimal currentMonthFraction = daysRemainingInMonth / 30m;
 
-            int fullMonths = 12 - transactionDate.Month;
+            int fullMonths = months;
 
             decimal totalMonths = fullMonths + currentMonthFraction;
 
@@ -68,15 +101,15 @@ public partial class AddTransaction : System.Web.UI.Page
 
             string query = @"INSERT INTO Transactions
         (PersonID, Type, Amount, InterestAmount,
-         TransactionFromDate, IsYearEnd, mode,per)
-        VALUES (@p,@t,@a,@i,@d,@y,@m,'"+txtInterest.Text+"')";
+         TransactionFromDate, IsYearEnd, mode,per,Closedate)
+        VALUES (@p,@t,@a,@i,@d,@y,@m,'" + txtInterest.Text + "','" + toDate + "')";
 
             SqlCommand cmd = new SqlCommand(query, con);
             cmd.Parameters.AddWithValue("@p", partyId);
             cmd.Parameters.AddWithValue("@t", type);
             cmd.Parameters.AddWithValue("@a", amount);
             cmd.Parameters.AddWithValue("@i", interest);
-            cmd.Parameters.AddWithValue("@d", transactionDate);
+            cmd.Parameters.AddWithValue("@d", fromDate);
             cmd.Parameters.AddWithValue("@y", 0);
             cmd.Parameters.AddWithValue("@m", mode);
 
@@ -125,5 +158,65 @@ public partial class AddTransaction : System.Web.UI.Page
         dr.Close();
 
         return balance;
+    }
+  
+    protected void txtname_TextChanged(object sender, EventArgs e)
+    {
+        string query = @"
+    SELECT TOP 1 
+        p.PartyID,
+        t.Per,
+        t.CloseDate
+    FROM Party p
+    LEFT JOIN Transactions t ON p.PartyID = t.PersonID
+    WHERE p.Name = @Name
+    ORDER BY t.ID DESC";
+
+        using (SqlCommand cmd = new SqlCommand(query, con))
+        {
+            cmd.Parameters.AddWithValue("@Name", txtname.Text);
+
+            if (con.State != ConnectionState.Open)
+                con.Open();
+
+            using (SqlDataReader dr = cmd.ExecuteReader())
+            {
+                if (dr.Read())
+                {
+                    // PartyID textbox
+                    lblpid.Text = dr["PartyID"].ToString();
+
+                    // Per textbox
+                    txtInterest.Text = dr["Per"].ToString();
+
+                    // Close Date textbox
+                    if (dr["CloseDate"] != DBNull.Value)
+                    {
+                        txtCloseDate.Text = Convert.ToDateTime(dr["CloseDate"])
+                            .ToString("dd-MM-yyyy");
+
+                        lblclosedateitle.Text = "Last Transaction Close Date";
+                        lblclosedateitle.ForeColor = System.Drawing.Color.Red;
+                    }
+                    else
+                    {
+                        txtCloseDate.Text = "";
+                        lblclosedateitle.Text = "Transaction Close Date";
+                        lblclosedateitle.ForeColor = System.Drawing.Color.Black;
+                    }
+
+                    lblclosedateitle.Visible = true;
+                    txtCloseDate.Visible = true;
+                }
+                else
+                {
+                    lblMsg.Text = "Party not found";
+                  
+                    txtCloseDate.Text = "";
+                }
+            }
+
+            con.Close();
+        }
     }
 }

@@ -54,7 +54,7 @@
 
             
          <div class="col-lg-3">
-    <asp:TextBox ID="txtname" runat="server" CssClass="form-control"></asp:TextBox>
+    <asp:TextBox ID="txtname" runat="server" CssClass="form-control" placeholder="Enter Name"></asp:TextBox>
               <cc1:AutoCompleteExtender ID="AutoCompleteExtProduct" runat="server" ServicePath="~/sellproduct.asmx"
                                             ServiceMethod="Searchbyname" CompletionInterval="10" CompletionListItemCssClass="AutoCompliteItem"
                                             CompletionListCssClass="AutoComplite" CompletionListHighlightedItemCssClass="AutoCompliteSelectedItem"
@@ -63,7 +63,7 @@
 </div>
 
 <div class="col-lg-3">
-    <asp:TextBox ID="txtmobile" runat="server" CssClass="form-control"></asp:TextBox>
+    <asp:TextBox ID="txtmobile" runat="server"  Visible="false" CssClass="form-control"></asp:TextBox>
 </div>
 
             <div class="col-lg-3">
@@ -88,6 +88,7 @@
             <asp:BoundField DataField="Amount" HeaderText="Amount" DataFormatString="₹ {0:0.00}" />
             <asp:BoundField DataField="InterestAmount" HeaderText="Interest" DataFormatString="₹ {0:0.00}" />
             <asp:BoundField DataField="TransactionFromDate" HeaderText="Date" DataFormatString="{0:dd-MMM-yyyy}" />
+               <asp:BoundField DataField="IsYearEndstatus" HeaderText="Status" />
             <asp:CommandField  ShowDeleteButton="true" />
         </Columns>
     </asp:GridView>

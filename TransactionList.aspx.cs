@@ -20,6 +20,7 @@ public partial class TransactionList : System.Web.UI.Page
         string query = @"
             SELECT t.ID, p.Name,
                    CASE WHEN t.Type=1 THEN 'Debit' ELSE 'Credit' END AS TypeText,
+CASE WHEN t.IsYearEnd=1 THEN 'Transaction Close' ELSE 'Transaction Open' END AS IsYearEndstatus,
                    t.Type, t.Amount, t.InterestAmount, t.TransactionFromDate, t.IsYearEnd
             FROM Transactions t  INNER JOIN Party p ON t.PersonID = p.PartyID   WHERE 1=1  " + name + "    ORDER BY t.TransactionFromDate, t.ID";
 
